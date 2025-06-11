@@ -1,0 +1,13 @@
+[package]
+name = "evops-grpc"
+edition = "2024"
+
+[dependencies]
+http = "1.3.1"
+prost = "0.13.5"
+tonic = "0.13.1"
+tonic-reflection = "0.13.1"
+
+[build-dependencies]
+# eyre = "0.6.12"
+# tonic-build = "0.13.1"
