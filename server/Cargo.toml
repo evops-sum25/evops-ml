@@ -1,13 +1,14 @@
 [package]
-name = "evops-grpc"
+name = "evops-ml"
 edition = "2024"
 
 [dependencies]
-http = "1.3.1"
 prost = "0.13.5"
 tonic = "0.13.1"
 tonic-reflection = "0.13.1"
+tokio = { version = "1.45.1", features = ["rt-multi-thread", "macros"] }
+eyre = "0.6.12"
 
 [build-dependencies]
-# eyre = "0.6.12"
-# tonic-build = "0.13.1"
+eyre = "0.6.12"
+tonic-build = "0.13.1"
