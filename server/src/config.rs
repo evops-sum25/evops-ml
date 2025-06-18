@@ -10,7 +10,7 @@ pub fn from_env() -> eyre::Result<self::Config> {
     let port = {
         let raw = std::env::var(SERVER_PORT).wrap_err(SERVER_PORT)?;
         raw.parse::<u16>().wrap_err(const_format::formatcp!(
-            "variable {SERVER_PORT} is malformed"
+            "variable {SERVER_PORT} is malformed",
         ))?
     };
 
