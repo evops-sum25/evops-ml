@@ -1,40 +1,65 @@
-#[derive(Debug, Default)]
-pub struct MlServiceStruct {}
+use tonic::transport::Server;
 
-pub mod evops_ml {
-    tonic::include_proto!("evops.ml.v1");
-}
+use std::net::{Ipv4Addr, SocketAddr};
 
-use evops_ml::ml_service_server::{MlService, MlServiceServer};
-use evops_ml::{MlServiceAskRequest, MlServiceAskResponse};
+use crate::service::MlServiceStruct;
+use crate::shutdown::signal;
 
-use tonic::{Request, Response, Status, transport::Server};
+use const_format::formatcp;
+use tracing::{debug, info};
+use tracing_subscriber::EnvFilter;
+use tracing_subscriber::layer::SubscriberExt as _;
+use tracing_subscriber::util::SubscriberInitExt as _;
 
-#[tonic::async_trait]
-impl MlService for MlServiceStruct {
-    async fn ask(
-        &self,
-        _request: Request<MlServiceAskRequest>,
-    ) -> Result<Response<MlServiceAskResponse>, Status> {
-
-        println!("Received!");
-        let req = _request.into_inner();
-        Ok(Response::new(MlServiceAskResponse {
-            name: req.name,
-            description: req.description,
-        }))
-    }
-}
+mod config;
+mod evops_ml;
+mod service;
+mod shutdown;
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
-    let addr = "127.0.0.1:50051".parse()?;
-    let server = MlServiceStruct::default();
+    color_eyre::install()?;
+    let dotenv_path = dotenvy::dotenv().ok();
+    self::init_logging();
 
+    if let Some(path) = dotenv_path {
+        debug!("found .env: {}", path.display());
+    } else {
+        debug!(".env not found");
+    }
+    let config = self::config::from_env()?;
+    let service = self::MlServiceStruct::default();
+
+    let addr = SocketAddr::new(Ipv4Addr::UNSPECIFIED.into(), config.port);
+    info!("listening on port {}", config.port);
     Server::builder()
-        .add_service(MlServiceServer::new(server))
-        .serve(addr)
+        .add_service(evops_ml::ml_service_server::MlServiceServer::new(service))
+        .serve_with_shutdown(addr, self::signal())
         .await?;
-
     Ok(())
+}
+
+fn init_logging() {
+    let env_filter = {
+        EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+            EnvFilter::new(formatcp!(
+                "info,tower_http=trace,{}=trace",
+                env!("CARGO_CRATE_NAME"),
+            ))
+        })
+    };
+
+    let fmt_layer = {
+        tracing_subscriber::fmt::layer()
+            .pretty()
+            .with_file(false)
+            .with_line_number(false)
+            .with_target(false)
+            .without_time()
+    };
+
+    tracing_subscriber::registry()
+        .with(env_filter)
+        .with(fmt_layer)
+        .init();
 }
