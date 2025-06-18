@@ -36,6 +36,7 @@ async fn main() -> eyre::Result<()> {
         .add_service(evops_ml::ml_service_server::MlServiceServer::new(service))
         .serve_with_shutdown(addr, self::signal())
         .await?;
+
     Ok(())
 }
 
