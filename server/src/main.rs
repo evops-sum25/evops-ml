@@ -2,7 +2,7 @@ use tonic::transport::Server;
 
 use std::net::{Ipv4Addr, SocketAddr};
 
-use crate::service::MlServiceStruct;
+use crate::service::MlService;
 use crate::shutdown::signal;
 
 use const_format::formatcp;
@@ -28,7 +28,7 @@ async fn main() -> eyre::Result<()> {
         debug!(".env not found");
     }
     let config = self::config::from_env()?;
-    let service = self::MlServiceStruct::default();
+    let service = self::MlService::default();
 
     let addr = SocketAddr::new(Ipv4Addr::UNSPECIFIED.into(), config.port);
     info!("listening on port {}", config.port);

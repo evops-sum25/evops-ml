@@ -1,13 +1,13 @@
 use tonic::{Request, Response, Status};
 
-use crate::evops_ml::ml_service_server::MlService;
+use crate::evops_ml::ml_service_server::MlService as Service; // I am not the best at naming, so ):
 use crate::evops_ml::{MlServiceAskRequest, MlServiceAskResponse};
 
 #[derive(Debug, Default)]
-pub struct MlServiceStruct;
+pub struct MlService;
 
 #[tonic::async_trait]
-impl MlService for MlServiceStruct {
+impl Service for self::MlService {
     async fn ask(
         &self,
         request: Request<MlServiceAskRequest>,
