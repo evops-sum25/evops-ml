@@ -8,16 +8,10 @@ const_format = "0.2.34"
 dotenvy = "0.15.7"
 eyre = "0.6.12"
 prost = "0.13.5"
-tokio = { version = "1.45.1", features = [
-  "rt-multi-thread",
-  "macros",
-  "signal",
-] }
+tokio = { version = "1.45.1", features = ["rt-multi-thread", "macros", "signal"] }
 tonic = "0.13.1"
-tonic-reflection = "0.13.1"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-url = "2.5.4"
 
 
 [build-dependencies]
