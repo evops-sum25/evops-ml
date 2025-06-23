@@ -1,0 +1,12 @@
+*Dockerfile
+.dockerignore
+.env
+.env.example
+.git
+.gitignore
+.gitmodules
+.taplo.toml
+/notebooks/
+/server/target/
+LICENSE*
+README.md
