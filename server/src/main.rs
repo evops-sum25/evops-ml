@@ -25,7 +25,7 @@ async fn main() -> eyre::Result<()> {
     if let Some(path) = dotenv_path {
         debug!("found .env: {}", path.display());
     } else {
-        debug!(".env not found");
+        debug!(".env not found, using environment variables");
     }
     let config = self::config::from_env()?;
     let service = self::MlService::default();
