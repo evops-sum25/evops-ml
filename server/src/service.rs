@@ -1,25 +1,26 @@
 use tonic::{Request, Response, Status};
-
-use crate::pb::ml_service_server::MlService as Service; // I am not the best at naming, so ):
-use crate::pb::{MlServiceGetTagsRequest, MlServiceGetTagsResponse};
-
 use tracing::debug;
 
-pub struct MlService {
-    state: crate::AppState,
-}
+use crate::pb::ml_service_server::MlService;
+use crate::pb::{MlServiceGetTagsRequest, MlServiceGetTagsResponse};
+use evops_models::ApiError;
 
 mod auto_tags;
 
+pub struct Service {
+    pub state: crate::AppState,
+}
+
 #[tonic::async_trait]
-impl Service for self::MlService {
+impl MlService for Service {
     async fn get_tags(
         &self,
         request: Request<MlServiceGetTagsRequest>,
     ) -> Result<Response<MlServiceGetTagsResponse>, Status> {
         let req = request.into_inner();
         debug!("Received request for: {}", req.description);
-        let tags_ids = crateget_tags(req.description)?;
+        let tags_ids = self.state.get_tags_et(req.description).await?;
+
         Ok(Response::new(MlServiceGetTagsResponse { tags_ids }))
     }
 }
