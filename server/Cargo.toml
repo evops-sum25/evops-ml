@@ -8,15 +8,20 @@ const_format = "0.2.34"
 dotenvy = "0.15.7"
 eyre = "0.6.12"
 prost = "0.13.5"
+pyo3 = "0.25.1"
 tokio = { version = "1.45.1", features = [
-  "macros",
-  "rt-multi-thread",
-  "signal",
+    "macros",
+    "rt-multi-thread",
+    "signal",
 ] }
 tonic = "0.13.1"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 
+evops-models = { path = "../server-ext/client-ext/crates/evops-models/" }
+evops-db = { path = "../server-ext/crates/evops-db/" }
+url = "2.5.4"
+bon = "3.6.4"
 
 [build-dependencies]
 eyre = "0.6.12"
