@@ -1,4 +1,5 @@
 use pyo3::{Bound, Py, prelude::*, types::PyList};
+use std::ffi::CString;
 use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
@@ -64,11 +65,22 @@ impl PythonInterfaceBuilder {
             ))
         })?;
 
-        Python::with_gil(|py| {
-            let sys = py.import("sys")?;
-            let path_buf = sys.getattr("path")?;
-            let sys_path = path_buf.downcast()?;
-            sys_path.insert(0, abs_module_dir)?;
+        Python::with_gil(|py| -> PyResult<()> {
+            let code = format!(
+                r#"import sys
+from pathlib import Path
+path = Path(r"{}").resolve()
+if str(path) not in sys.path:
+    sys.path.insert(0, str(path))"#,
+                abs_module_dir.display()
+            );
+            py.run(
+                CString::new(code)
+                    .expect("Failed to convert string")
+                    .as_c_str(),
+                None,
+                None,
+            )?;
             Ok(())
         })
     }
