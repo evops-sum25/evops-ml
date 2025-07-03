@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use evops_models::Tag;
+use eyre::Context as _;
 
 impl crate::AppState {
     async fn call_auto_tags(
@@ -11,7 +12,7 @@ impl crate::AppState {
         let python_interface = self.python_interface().lock().await;
         python_interface
             .predict_tags(description.as_str(), &tags_name)
-            .map_err(|err| eyre::Error::new(err))
+            .wrap_err("error calling python auto tagger")
     }
 
     pub async fn get_tags_et(&self, description: String) -> eyre::Result<Vec<String>> {

@@ -24,16 +24,23 @@ impl PythonInterfaceBuilder {
     }
 
     pub fn build(self) -> PyResult<PythonInterface> {
+        tracing::debug!("Initializing python interface");
         self.initialize_python()?;
 
-        Python::with_gil(|py| {
+        tracing::debug!("Loading python modules");
+        let result_r: PyResult<PythonInterface> = Python::with_gil(|py| {
             Ok(PythonInterface {
                 auto_tagger: AutoTagger::initialize(py)?,
             })
-        })
+        });
+        let result = result_r?;
+        tracing::debug!("Finished initializing python interface");
+        Ok(result)
     }
 
     fn initialize_python(&self) -> PyResult<()> {
+        pyo3::prepare_freethreaded_python();
+
         let python_exe = if cfg!(windows) {
             self.venv_path.join("Scripts").join("python.exe")
         } else {
@@ -41,6 +48,7 @@ impl PythonInterfaceBuilder {
         };
 
         if !python_exe.exists() {
+            tracing::error!("Python not found");
             return Err(PyErr::new::<pyo3::exceptions::PyFileNotFoundError, _>(
                 format!("Python not found at: {}", python_exe.display()),
             ));

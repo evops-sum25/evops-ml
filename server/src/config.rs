@@ -29,12 +29,26 @@ pub fn from_env() -> eyre::Result<self::Config> {
         ))?
     };
     let auto_tags_treshhold = {
-        let raw = std::env::var(AUTO_TAGS_TRESHHOLD).wrap_err(AUTO_TAGS_TRESHHOLD)?;
-        raw.parse::<f32>()
-            .wrap_err(const_format::formatcp!(
-                "variable {AUTO_TAGS_TRESHHOLD} is malformed, using default value"
-            ))
+        std::env::var(AUTO_TAGS_TRESHHOLD)
+            .map_err(|e| {
+                tracing::debug!(
+                    "Variable {} is not found: (using default value)",
+                    AUTO_TAGS_TRESHHOLD
+                );
+                e
+            })
             .ok()
+            .and_then(|raw| {
+                raw.parse::<f32>()
+                    .map_err(|e| {
+                        tracing::warn!(
+                            "Variable {} is malformed: {} (using default value)",
+                            AUTO_TAGS_TRESHHOLD,
+                            e
+                        );
+                    })
+                    .ok()
+            })
     };
     let venv_path = {
         let raw = std::env::var(VENV_PATH).wrap_err(VENV_PATH)?;

@@ -9,6 +9,7 @@ use crate::shutdown::signal;
 use crate::service::Service;
 
 use const_format::formatcp;
+use eyre::Context as _;
 use tracing::{debug, info};
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::layer::SubscriberExt as _;
@@ -38,7 +39,8 @@ async fn main() -> eyre::Result<()> {
         config.python_modules_path,
         config.auto_tags_treshhold,
     )
-    .build()?;
+    .build()
+    .wrap_err("error building python interface")?;
 
     let state = {
         AppState::builder()
