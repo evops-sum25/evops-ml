@@ -3,7 +3,6 @@ use tracing::debug;
 
 use crate::pb::ml_service_server::MlService;
 use crate::pb::{MlServiceGetTagsRequest, MlServiceGetTagsResponse};
-use evops_models::ApiError;
 
 mod auto_tags;
 
@@ -19,7 +18,11 @@ impl MlService for Service {
     ) -> Result<Response<MlServiceGetTagsResponse>, Status> {
         let req = request.into_inner();
         debug!("Received request for: {}", req.description);
-        let tags_ids = self.state.get_tags_et(req.description).await?;
+        let tags_ids = self
+            .state
+            .get_tags_et(req.description)
+            .await
+            .map_err(|err| Status::invalid_argument(err.to_string()))?;
 
         Ok(Response::new(MlServiceGetTagsResponse { tags_ids }))
     }

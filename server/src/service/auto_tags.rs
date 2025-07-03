@@ -2,20 +2,19 @@ use std::collections::HashMap;
 
 use evops_models::{ApiResult, Tag};
 
-use uuid::Uuid;
-
 impl crate::AppState {
     async fn call_auto_tags(
         &self,
-        description: String,
-        tags_name: Vec<&String>,
+        _description: String,
+        _tags_name: Vec<&String>,
     ) -> ApiResult<Vec<String>> {
+        let _treshhold = self.auto_tags_treshhold();
         Ok(Vec::new())
     }
 
-    pub async fn get_tags_et(&self, description: String) -> ApiResult<Vec<Uuid>> {
+    pub async fn get_tags_et(&self, description: String) -> ApiResult<Vec<String>> {
         let tags_list = {
-            let mut db = self.shared_state.db.lock().await;
+            let mut db = self.db().lock().await;
             db.list_tags(None, None).await
         }?;
         let tags_map: HashMap<String, Tag> = tags_list
@@ -25,7 +24,10 @@ impl crate::AppState {
         let correct_tags = self
             .call_auto_tags(description, tags_map.keys().clone().collect())
             .await?;
-        let result = correct_tags.into_iter().map(|tag| tag);
-        Ok(Vec::new())
+        let result: Vec<String> = correct_tags
+            .iter()
+            .map(|tag| tags_map.get(tag).unwrap().id.to_string())
+            .collect();
+        Ok(result)
     }
 }

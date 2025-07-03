@@ -35,15 +35,10 @@ impl AppState {
             auto_tags_treshhold,
         })
     }
-
-    /// Does the same thing as `self.clone()`,
-    /// but the method name explicitly tells that the new object
-    /// will point to the same memory location.
-    #[must_use]
-    pub fn arc_clone(&self) -> Self {
-        Self {
-            shared_state: Arc::clone(&self.shared_state),
-            auto_tags_treshhold: self.auto_tags_treshhold,
-        }
+    pub fn auto_tags_treshhold(&self) -> Option<f32> {
+        self.auto_tags_treshhold
+    }
+    pub fn db(&self) -> &tokio::sync::Mutex<evops_db::Database> {
+        &self.shared_state.db
     }
 }
