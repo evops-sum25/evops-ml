@@ -89,7 +89,7 @@ class ZeroShotTagger:
         event_description = re.sub(r'\s+', ' ', event_description).strip()
         return event_description
 
-    def predict(self, event_description: str) -> List[str]:
+    def predict(self, event_description: str, tag_list: List) -> List[str]:
         '''
         Identifies relevant tags for an event description using zero-shot classification.
         Returns tags above the specified threshold.

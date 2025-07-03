@@ -3,6 +3,7 @@ use tonic::transport::Server;
 use std::net::{Ipv4Addr, SocketAddr};
 
 use crate::pb::AppState;
+use crate::py_utils::PythonInterfaceBuilder;
 use crate::shutdown::signal;
 
 use crate::service::Service;
@@ -15,6 +16,7 @@ use tracing_subscriber::util::SubscriberInitExt as _;
 
 mod config;
 mod pb;
+mod py_utils;
 mod service;
 mod shutdown;
 
@@ -31,13 +33,19 @@ async fn main() -> eyre::Result<()> {
     }
     let config = self::config::from_env()?;
 
-    let state = {
-        let builder = AppState::builder().database_url(&config.database_url);
+    let python_interface = PythonInterfaceBuilder::new(
+        config.venv_path,
+        config.python_modules_path,
+        config.auto_tags_treshhold,
+    )
+    .build()?;
 
-        match config.auto_tags_treshhold {
-            Some(val) => builder.auto_tags_treshhold(val).build().await,
-            None => builder.build().await,
-        }?
+    let state = {
+        AppState::builder()
+            .database_url(&config.database_url)
+            .python_interface(python_interface)
+            .build()
+            .await?
     };
 
     let service = self::Service { state };

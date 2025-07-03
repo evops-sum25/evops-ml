@@ -1,18 +1,20 @@
 use std::collections::HashMap;
 
-use evops_models::{ApiResult, Tag};
+use evops_models::Tag;
 
 impl crate::AppState {
     async fn call_auto_tags(
         &self,
-        _description: String,
-        _tags_name: Vec<&String>,
-    ) -> ApiResult<Vec<String>> {
-        let _treshhold = self.auto_tags_treshhold();
-        Ok(Vec::new())
+        description: String,
+        tags_name: Vec<&String>,
+    ) -> eyre::Result<Vec<String>> {
+        let python_interface = self.python_interface().lock().await;
+        python_interface
+            .predict_tags(description.as_str(), &tags_name)
+            .map_err(|err| eyre::Error::new(err))
     }
 
-    pub async fn get_tags_et(&self, description: String) -> ApiResult<Vec<String>> {
+    pub async fn get_tags_et(&self, description: String) -> eyre::Result<Vec<String>> {
         let tags_list = {
             let mut db = self.db().lock().await;
             db.list_tags(None, None).await
