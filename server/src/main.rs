@@ -1,18 +1,20 @@
-use tonic::transport::Server;
-
-use std::net::{Ipv4Addr, SocketAddr};
-
-use crate::service::MlService;
-use crate::shutdown::signal;
-
 use const_format::formatcp;
+use eyre::Context as _;
+use std::net::{Ipv4Addr, SocketAddr};
+use tonic::transport::Server;
 use tracing::{debug, info};
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::layer::SubscriberExt as _;
 use tracing_subscriber::util::SubscriberInitExt as _;
 
+use crate::pb::AppState;
+use crate::py_utils::PythonInterfaceBuilder;
+use crate::service::Service;
+use crate::shutdown::signal;
+
 mod config;
-mod evops_ml;
+mod pb;
+mod py_utils;
 mod service;
 mod shutdown;
 
@@ -28,12 +30,29 @@ async fn main() -> eyre::Result<()> {
         debug!(".env not found, using environment variables");
     }
     let config = self::config::from_env()?;
-    let service = self::MlService::default();
+
+    let python_interface = PythonInterfaceBuilder::new(
+        config.venv_path,
+        config.python_modules_path,
+        config.auto_tags_treshhold,
+    )
+    .build()
+    .wrap_err("error building python interface")?;
+
+    let state = {
+        AppState::builder()
+            .database_url(&config.database_url)
+            .python_interface(python_interface)
+            .build()
+            .await?
+    };
+
+    let service = self::Service { state };
 
     let addr = SocketAddr::new(Ipv4Addr::UNSPECIFIED.into(), config.port);
     info!("listening on port {}", config.port);
     Server::builder()
-        .add_service(evops_ml::ml_service_server::MlServiceServer::new(service))
+        .add_service(pb::ml_service_server::MlServiceServer::new(service))
         .serve_with_shutdown(addr, self::signal())
         .await?;
 
