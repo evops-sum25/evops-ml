@@ -31,13 +31,10 @@ async fn main() -> eyre::Result<()> {
     }
     let config = self::config::from_env()?;
 
-    let python_interface = PythonInterfaceBuilder::new(
-        config.venv_path,
-        config.python_modules_path,
-        config.auto_tags_treshhold,
-    )
-    .build()
-    .wrap_err("error building python interface")?;
+    let python_interface =
+        PythonInterfaceBuilder::new(config.python_modules_path, config.auto_tags_treshhold)
+            .build()
+            .wrap_err("error building python interface")?;
 
     let state = {
         AppState::builder()

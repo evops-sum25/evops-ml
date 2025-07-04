@@ -8,18 +8,15 @@ pub struct PythonInterface {
 }
 
 pub struct PythonInterfaceBuilder {
-    venv_path: PathBuf,
     modules_path: PathBuf,
 }
 
 impl PythonInterfaceBuilder {
     pub fn new(
-        venv_path: impl AsRef<Path>,
         modules_path: impl AsRef<Path>,
         _auto_tagger_treshhold: Option<f32>, // FIXME: Yep, I am to lazy to implement this now -_-
     ) -> Self {
         Self {
-            venv_path: venv_path.as_ref().to_path_buf(),
             modules_path: modules_path.as_ref().to_path_buf(),
         }
     }
@@ -41,22 +38,6 @@ impl PythonInterfaceBuilder {
 
     fn initialize_python(&self) -> PyResult<()> {
         pyo3::prepare_freethreaded_python();
-
-        let python_exe = if cfg!(windows) {
-            self.venv_path.join("Scripts").join("python.exe")
-        } else {
-            self.venv_path.join("bin").join("python")
-        };
-
-        if !python_exe.exists() {
-            tracing::error!("Python not found");
-            return Err(PyErr::new::<pyo3::exceptions::PyFileNotFoundError, _>(
-                format!("Python not found at: {}", python_exe.display()),
-            ));
-        }
-
-        unsafe { std::env::set_var("PYTHONHOME", python_exe.parent().unwrap()) };
-
         let abs_module_dir = self.modules_path.canonicalize().map_err(|e| {
             pyo3::exceptions::PyRuntimeError::new_err(format!(
                 "Failed to resolve module directory: {}\nError: {}",

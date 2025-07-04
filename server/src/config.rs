@@ -4,16 +4,13 @@ use url::Url;
 const SERVER_PORT: &str = "SERVER_PORT";
 const DATABASE_URL: &str = "DATABASE_URL";
 const AUTO_TAGS_TRESHHOLD: &str = "AUTO_TAGS_TRESHHOLD";
-// const VENV_PATH: &str = "VENV_PATH";
 // const PYTHON_MODULES_PATH: &str = "PYTHON_MODULES_PATH";
 
-const VENV_PATH: &str = "../venv";
 const PYTHON_MODULES_PATH: &str = "../core";
 
 pub struct Config {
     pub port: u16,
     pub database_url: Url,
-    pub venv_path: String,
     pub python_modules_path: String,
     pub auto_tags_treshhold: Option<f32>,
 }
@@ -68,7 +65,6 @@ pub fn from_env() -> eyre::Result<self::Config> {
     Ok(self::Config {
         port,
         database_url,
-        venv_path: String::from(VENV_PATH),
         python_modules_path: String::from(PYTHON_MODULES_PATH),
         auto_tags_treshhold,
     })
