@@ -1,19 +1,16 @@
-use tonic::transport::Server;
-
-use std::net::{Ipv4Addr, SocketAddr};
-
-use crate::pb::AppState;
-use crate::py_utils::PythonInterfaceBuilder;
-use crate::shutdown::signal;
-
-use crate::service::Service;
-
 use const_format::formatcp;
 use eyre::Context as _;
+use std::net::{Ipv4Addr, SocketAddr};
+use tonic::transport::Server;
 use tracing::{debug, info};
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::layer::SubscriberExt as _;
 use tracing_subscriber::util::SubscriberInitExt as _;
+
+use crate::pb::AppState;
+use crate::py_utils::PythonInterfaceBuilder;
+use crate::service::Service;
+use crate::shutdown::signal;
 
 mod config;
 mod pb;

@@ -1,7 +1,7 @@
+use eyre::Context as _;
 use std::collections::HashMap;
 
 use evops_models::Tag;
-use eyre::Context as _;
 
 impl crate::AppState {
     async fn call_auto_tags(

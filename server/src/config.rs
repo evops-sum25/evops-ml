@@ -4,8 +4,11 @@ use url::Url;
 const SERVER_PORT: &str = "SERVER_PORT";
 const DATABASE_URL: &str = "DATABASE_URL";
 const AUTO_TAGS_TRESHHOLD: &str = "AUTO_TAGS_TRESHHOLD";
-const VENV_PATH: &str = "VENV_PATH";
-const PYTHON_MODULES_PATH: &str = "PYTHON_MODULES_PATH";
+// const VENV_PATH: &str = "VENV_PATH";
+// const PYTHON_MODULES_PATH: &str = "PYTHON_MODULES_PATH";
+
+const VENV_PATH: &str = "../venv";
+const PYTHON_MODULES_PATH: &str = "../core";
 
 pub struct Config {
     pub port: u16,
@@ -50,23 +53,23 @@ pub fn from_env() -> eyre::Result<self::Config> {
                     .ok()
             })
     };
-    let venv_path = {
-        let raw = std::env::var(VENV_PATH).wrap_err(VENV_PATH)?;
-        raw.parse::<String>()
-            .wrap_err(const_format::formatcp!("variable {VENV_PATH} is malformed"))?
-    };
-    let python_modules_path = {
-        let raw = std::env::var(PYTHON_MODULES_PATH).wrap_err(PYTHON_MODULES_PATH)?;
-        raw.parse::<String>().wrap_err(const_format::formatcp!(
-            "variable {PYTHON_MODULES_PATH} is malformed"
-        ))?
-    };
+    // let venv_path = {
+    //     let raw = std::env::var(VENV_PATH).wrap_err(VENV_PATH)?;
+    //     raw.parse::<String>()
+    //         .wrap_err(const_format::formatcp!("variable {VENV_PATH} is malformed"))?
+    // };
+    // let python_modules_path = {
+    //     let raw = std::env::var(PYTHON_MODULES_PATH).wrap_err(PYTHON_MODULES_PATH)?;
+    //     raw.parse::<String>().wrap_err(const_format::formatcp!(
+    //         "variable {PYTHON_MODULES_PATH} is malformed"
+    //     ))?
+    // };
 
     Ok(self::Config {
         port,
         database_url,
-        venv_path,
-        python_modules_path,
+        venv_path: String::from(VENV_PATH),
+        python_modules_path: String::from(PYTHON_MODULES_PATH),
         auto_tags_treshhold,
     })
 }

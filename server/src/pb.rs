@@ -1,11 +1,11 @@
 tonic::include_proto!("evops.ml.v1");
 
-use std::sync::Arc;
-
-use crate::py_utils::PythonInterface;
 use bon::bon;
 use eyre::Context as _;
+use std::sync::Arc;
 use url::Url;
+
+use crate::py_utils::PythonInterface;
 
 struct State {
     db: tokio::sync::Mutex<evops_db::Database>,

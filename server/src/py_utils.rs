@@ -67,11 +67,7 @@ impl PythonInterfaceBuilder {
 
         Python::with_gil(|py| -> PyResult<()> {
             let code = format!(
-                r#"import sys
-from pathlib import Path
-path = Path(r"{}").resolve()
-if str(path) not in sys.path:
-    sys.path.insert(0, str(path))"#,
+                include_str!("py_utils/add_path.py"),
                 abs_module_dir.display()
             );
             py.run(
