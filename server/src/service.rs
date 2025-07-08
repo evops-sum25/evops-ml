@@ -18,12 +18,12 @@ impl MlService for Service {
     ) -> Result<Response<MlServiceGetTagsResponse>, Status> {
         let req = request.into_inner();
         debug!("Received request for: {}", req.description);
-        let tags_ids = self
+        let tag_ids = self
             .state
             .get_tags_et(req.description)
             .await
             .map_err(|err| Status::invalid_argument(err.to_string()))?;
 
-        Ok(Response::new(MlServiceGetTagsResponse { tags_ids }))
+        Ok(Response::new(MlServiceGetTagsResponse { tag_ids }))
     }
 }
