@@ -3,7 +3,7 @@ RUN apt-get update && apt-get install -y wget unzip && \
     wget https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-linux-x86_64.zip && \
     unzip protoc-26.1-linux-x86_64.zip -d /usr/local && \
     rm protoc-26.1-linux-x86_64.zip
-RUN apt-get install -y libssl-dev pkg-config libpq-dev
+RUN apt-get install -y libssl-dev pkg-config libpq-dev python3
 WORKDIR /app
 
 FROM chef AS planner

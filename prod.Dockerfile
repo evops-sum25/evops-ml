@@ -4,6 +4,6 @@ COPY ./ ./
 RUN cargo install --path=server/
 
 FROM debian:bookworm-slim
-RUN apt-get update && apt-get install --assume-yes libpq-dev
+RUN apt-get update && apt-get install --assume-yes libpq-dev python3
 COPY --from=builder /usr/local/cargo/bin/evops-ml /usr/local/bin/
 ENTRYPOINT ["evops-ml"]
