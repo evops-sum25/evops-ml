@@ -1,23 +1,18 @@
 [package]
-edition = "2024"
 name = "evops-ml"
+edition = "2024"
 
 [dependencies]
-evops-db = { path = "../server-ext/crates/evops-db/" }
-evops-models = { path = "../server-ext/client-ext/crates/evops-models/" }
-
 bon = "3.6.4"
 color-eyre = "0.6.5"
 const_format = "0.2.34"
 dotenvy = "0.15.7"
+evops-db = { path = "../server-ext/crates/evops-db/" }
+evops-models = { path = "../server-ext/client-ext/crates/evops-models/" }
 eyre = "0.6.12"
 prost = "0.13.5"
 pyo3 = "0.25.1"
-tokio = { version = "1.45.1", features = [
-    "macros",
-    "rt-multi-thread",
-    "signal",
-] }
+tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread", "signal"] }
 tonic = "0.13.1"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
