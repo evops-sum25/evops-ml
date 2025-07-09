@@ -1,4 +1,5 @@
 FROM lukemathwalker/cargo-chef:0.1.71-rust-1.87.0-slim-bookworm AS chef
+RUN cargo install bacon@3.15.0
 RUN apt-get update && apt-get install -y wget unzip && \
     wget https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-linux-x86_64.zip && \
     unzip protoc-26.1-linux-x86_64.zip -d /usr/local && \
