@@ -105,7 +105,8 @@ class UserProfileBuilder:
     def build_profile(
         self,
         interactions: List[Dict], 
-        event_embeddings: List[np.ndarray]
+        event_embeddings: List[np.ndarray],
+        dimensionality = 768
     ) -> np.ndarray:
         """
         Builds normalized user profile from interaction history
@@ -113,6 +114,7 @@ class UserProfileBuilder:
         Args:
             interactions: List of interaction records per event
             event_embeddings: Corresponding event embedding vectors
+            dimensionality: Length of embedding vector
 
         Returns:
             np.ndarray: Normalized profile vector
@@ -130,9 +132,9 @@ class UserProfileBuilder:
             - Zero-weight interactions are ignored
             - Returns zero-vector when no valid interactions
         """
-        good_sum = np.zeros_like(event_embeddings[0])
+        good_sum = np.zeros(dimensionality)
         good_total_weight = 0.0
-        bad_sum = np.zeros_like(event_embeddings[0])
+        bad_sum = np.zeros(dimensionality)
         bad_total_weight = 0.0
 
         for i, emb in enumerate(event_embeddings):
