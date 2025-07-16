@@ -22,6 +22,7 @@ class ZeroShotTagger:
             "zero-shot-classification",
             model='sileod/deberta-v3-base-tasksource-nli',
             tokenizer=self.tokenizer,
+            torch_dtype=torch.float16,
             device=0 if torch.cuda.is_available() else -1
         )
 
