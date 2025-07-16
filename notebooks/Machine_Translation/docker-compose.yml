@@ -1,0 +1,18 @@
+services:
+  libretranslate:
+    container_name: libretranslate
+    restart: unless-stopped
+    tty: true
+    image: libretranslate/libretranslate:latest
+    ports:
+      - 5000:5000
+    environment:
+      LT_UPDATE_MODELS: "true"
+      LT_DISABLE_WEB_UI: "true"
+      LT_DISABLE_FILES_TRANSLATION: "true"
+      LT_THREADS: 2
+      LT_CHAR_LIMIT: 3000
+    volumes:
+      - libretranslate_models:/home/libretranslate/.local:rw
+volumes:
+  libretranslate_models:
