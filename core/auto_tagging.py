@@ -1,9 +1,10 @@
 from transformers import pipeline, AutoTokenizer
-from typing import List
+from typing import List, Generator
 import unicodedata
 import re
 import emoji
 import torch
+import random
 
 
 class ZeroShotTagger:
@@ -89,35 +90,34 @@ class ZeroShotTagger:
         event_description = re.sub(r'\s+', ' ', event_description).strip()
         return event_description
 
-    def predict(self, event_description: str, tag_list: List = []) -> List[str]:
+    def predict(self, event_description: str, tag_list: List = [], batch_size: int = 10) -> Generator[str, None, None]:
         '''
         Identifies relevant tags for an event description using zero-shot classification.
-        Returns tags above the specified threshold.
+        Yields qualifying tags in batches as they become available
 
         Args:
             event_description (str): Text description of the event to classify
+            tag_list: Custom tags (uses default if empty)
+            batch_size: Processing chunk size
 
         Returns:
-            list: List of tag filtered by threshold,
-                sorted by descending confidence (order from classifier output)
+            Relevant tags meeting confidence threshold
         '''
         if len(tag_list) == 0:
             tag_list = self.tags
-        # Preprocessing a description
+        random.shuffle(tag_list)
         event_description = self._preprocess_description(event_description)
 
-        result = self.classifier(
-            event_description,
-            candidate_labels=tag_list,
-            truncation=True,
-            multi_label=True
-        )
-
-        # Filtering tags by threshold
-        relevant_tags = [
-            tag
-            for tag, score in zip(result['labels'], result['scores'])
-            if score >= self.threshold
-        ]
-
-        return relevant_tags
+        for i in range(0, len(tag_list), batch_size):
+            batch = tag_list[i:i + batch_size]
+            
+            result = self.classifier(
+                event_description,
+                candidate_labels=batch,
+                truncation=True,
+                multi_label=True
+            )
+            
+            for tag, score in zip(result['labels'], result['scores']):
+                if score >= self.threshold:
+                    yield tag
