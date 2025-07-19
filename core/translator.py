@@ -36,6 +36,19 @@ class Translator:
         target_lang: str,
         source_lang: str = "auto",
     ) -> Union[TextTranslation, APIError]:
+        """
+        Translates a string or a list of strings.
+
+        Args:
+            - text: The text or list of texts to translate.
+            - target_lang: The language code to translate to (e.g., "en", "ru").
+            - source_lang: The source language code. Defaults to auto detection.
+
+        Returns:
+            - A dictionary containing either `translatedText` with a list of strings on success
+                or `error` with its description on failure.
+        """
+
         try:
             payload = {
                 "q": text,
@@ -60,6 +73,17 @@ class Translator:
 
 
     def detect_language(self, text: str) -> Union[DetectedLanguage, APIError]:
+        """
+        Detects the language of a given text string.
+
+        Args:
+            - text: The text to analyze.
+
+        Returns:
+            - A dictionary containing either `language` with the detected language code (e.g., "en", "ru") on success
+                or `error` with its description on failure.
+        """
+
         try:
             payload = {
                 "q": text
@@ -78,6 +102,15 @@ class Translator:
 
 
     def get_languages(self) -> Union[LanguageList, APIError]:
+        """
+        Fetches the list of languages supported by the server.
+
+        Returns:
+            - A dictionary containing either `availableLanguages`
+                with the list of dictionaries with `code` and `name` of the available languages
+                or `error` with its description.
+        """
+
         try:
             response = requests.get(url=self.languages_url)
             response.raise_for_status()
